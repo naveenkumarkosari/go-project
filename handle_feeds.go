@@ -48,3 +48,19 @@ func (apiCfg apiConfig) CreateFeed(w http.ResponseWriter, r *http.Request) {
 	}
 	responseWithJSON(w, 200, feed)
 }
+
+func (apiCfg apiConfig) GetUserFeeds(w http.ResponseWriter, r *http.Request) {
+	apiKey, err := auth.GetAPIKey(r.Header)
+	if err != nil {
+		responseWithError(w, 403, "authenticated route")
+	}
+	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
+	if err != nil {
+		responseWithError(w, 401, "user not found")
+	}
+	feeds, err := apiCfg.DB.GetUserPosts(r.Context(), user.ID)
+	if err != nil {
+		responseWithError(w, 501, "something went wrong")
+	}
+	responseWithJSON(w, 200, feeds)
+}

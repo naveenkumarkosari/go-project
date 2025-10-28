@@ -45,3 +45,20 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 	)
 	return i, err
 }
+
+const getUserPosts = `-- name: GetUserPosts :one
+SELECT id, createdat, updatedat, content, createdby FROM feeds where createdBy=$1
+`
+
+func (q *Queries) GetUserPosts(ctx context.Context, createdby uuid.UUID) (Feed, error) {
+	row := q.db.QueryRowContext(ctx, getUserPosts, createdby)
+	var i Feed
+	err := row.Scan(
+		&i.ID,
+		&i.Createdat,
+		&i.Updatedat,
+		&i.Content,
+		&i.Createdby,
+	)
+	return i, err
+}

@@ -60,6 +60,7 @@ func main() {
 
 	// feeds route ====
 	v1Router.Post("/feed", apiCfg.CreateFeed)
+	v1Router.Get("/myfeeds", apiCfg.GetUserFeeds)
 	r.Mount("/v1", v1Router)
 
 	srv := &http.Server{
