@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/naveenkumarkosari/go-project.git/internal/auth"
 	"github.com/naveenkumarkosari/go-project.git/internal/database"
 )
 
@@ -38,18 +37,7 @@ func (apiCfg apiConfig) handleCreateUser(w http.ResponseWriter, r *http.Request)
 	responseWithJSON(w, http.StatusOK, newUser)
 }
 
-func (apiCfg apiConfig) GetUser(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetAPIKey(r.Header)
-	if err != nil {
-		responseWithError(w, 401, "unauthorized user")
-		return
-	}
-	fmt.Println(apiKey, "===key")
-	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		responseWithError(w, 401, "something went wrong fetching user")
-		return
-	}
+func (apiCfg apiConfig) GetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	newUser := databaseUserDyn(user)
 	responseWithJSON(w, 200, newUser)
 }

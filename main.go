@@ -55,12 +55,12 @@ func main() {
 	v1Router.Get("/", handleHealthRequest)
 	v1Router.Get("/err", handleErrRequest)
 	v1Router.Post("/user", apiCfg.handleCreateUser)
-	v1Router.Get("/user", apiCfg.GetUser)
+	v1Router.Get("/user", apiCfg.middlewareAuth(apiCfg.GetUser))
 	v1Router.Get("/list", apiCfg.GetAllUser)
 
 	// feeds route ====
-	v1Router.Post("/feed", apiCfg.CreateFeed)
-	v1Router.Get("/myfeeds", apiCfg.GetUserFeeds)
+	v1Router.Post("/feed", apiCfg.middlewareAuth(apiCfg.CreateFeed))
+	v1Router.Get("/myfeeds", apiCfg.middlewareAuth(apiCfg.GetUserFeeds))
 	r.Mount("/v1", v1Router)
 
 	srv := &http.Server{

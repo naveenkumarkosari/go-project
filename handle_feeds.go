@@ -8,25 +8,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/naveenkumarkosari/go-project.git/internal/auth"
 	"github.com/naveenkumarkosari/go-project.git/internal/database"
 )
 
-func (apiCfg apiConfig) CreateFeed(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetAPIKey(r.Header)
-	if err != nil {
-		responseWithError(w, 403, "authenticated route")
-	}
-	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		responseWithError(w, 401, "user not found")
-	}
+func (apiCfg apiConfig) CreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameters struct {
 		Text string `json:"text"`
 	}
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
-	err = decoder.Decode(&params)
+	err := decoder.Decode(&params)
 	if err != nil {
 		fmt.Println(err, "parsing error")
 		responseWithError(w, 400, "Bad payload")
@@ -49,15 +40,7 @@ func (apiCfg apiConfig) CreateFeed(w http.ResponseWriter, r *http.Request) {
 	responseWithJSON(w, 200, feed)
 }
 
-func (apiCfg apiConfig) GetUserFeeds(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetAPIKey(r.Header)
-	if err != nil {
-		responseWithError(w, 403, "authenticated route")
-	}
-	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		responseWithError(w, 401, "user not found")
-	}
+func (apiCfg apiConfig) GetUserFeeds(w http.ResponseWriter, r *http.Request, user database.User) {
 	feeds, err := apiCfg.DB.GetUserPosts(r.Context(), user.ID)
 	if err != nil {
 		responseWithError(w, 501, "something went wrong")
