@@ -37,7 +37,8 @@ func (apiCfg apiConfig) CreateFeed(w http.ResponseWriter, r *http.Request, user 
 	if err != nil {
 		responseWithError(w, 401, "something went wrong")
 	}
-	responseWithJSON(w, 200, feed)
+	dynamicFeed := dynFeed(feed)
+	responseWithJSON(w, 200, dynamicFeed)
 }
 
 func (apiCfg apiConfig) GetUserFeeds(w http.ResponseWriter, r *http.Request, user database.User) {
@@ -45,5 +46,10 @@ func (apiCfg apiConfig) GetUserFeeds(w http.ResponseWriter, r *http.Request, use
 	if err != nil {
 		responseWithError(w, 501, "something went wrong")
 	}
-	responseWithJSON(w, 200, feeds)
+	result := []Feed{}
+	for i := range feeds {
+		dynamicFeed := dynFeed(feeds[i])
+		result = append(result, dynamicFeed)
+	}
+	responseWithJSON(w, 200, result)
 }
